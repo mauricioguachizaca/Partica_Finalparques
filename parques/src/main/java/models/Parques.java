@@ -3,9 +3,9 @@ package models;
 public class Parques{
     private Integer idParques;
     private String nombre;
-    private String direccion;
-    private Float longitud;
-    private Float latitud;
+    private String descripcion;
+    private Double longitud;
+    private Double latitud;
 
     public Integer getidParques() {
         return this.idParques;
@@ -23,34 +23,34 @@ public class Parques{
         this.nombre = nombre;
     }
 
-    public String getDireccion() {
-        return this.direccion;
+    public String getdescripcion() {
+        return this.descripcion;
     }
 
-    public void setDireccion(String direccion) {
-        this.direccion = direccion;
+    public void setdescripcion(String descripcion) {
+        this.descripcion = descripcion;
     }
 
-    public Float getLongitud() {
+    public Double getLongitud() {
         return this.longitud;
     }
 
-    public void setLongitud(Float longitud) {
+    public void setLongitud(Double longitud) {
         this.longitud = longitud;
     }
 
-    public Float getLatitud() {
+    public Double getLatitud() {
         return this.latitud;
     }
 
-    public void setLatitud(Float latitud) {
+    public void setLatitud(Double latitud) {
         this.latitud = latitud;
     }
 
-    public Parques(Integer idParques, String nombre, String direccion, Float longitud, Float latitud) {
+    public Parques(Integer idParques, String nombre, String descripcion, Double longitud, Double latitud) {
         this.idParques = idParques;
         this.nombre = nombre;
-        this.direccion = direccion;
+        this.descripcion = descripcion;
         this.longitud = longitud;
         this.latitud = latitud;
     }

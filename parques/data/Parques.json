@@ -1,9 +1,16 @@
 [
     {
         "idParques": 1,
-        "nombre": "Parque de los rosales",
-        "direccion": "Rosales",
-        "longitud": 2.3113213E8,
-        "latitud": 223813.0
+        "nombre": "Parque San Pedro",
+        "descripcion": "parque chevere",
+        "longitud": -4.00731183703881,
+        "latitud": -79.20665944376829
+    },
+    {
+        "idParques": 2,
+        "nombre": "Parque de la Musica",
+        "descripcion": "parque  muy musical",
+        "longitud": -4.006514422028958,
+        "latitud": 79.20706035805235
     }
 ]

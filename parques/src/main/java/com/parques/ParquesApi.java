@@ -41,9 +41,10 @@ public class ParquesApi {
         try {
             ParquesServices ps = new ParquesServices();
             ps.getParques().setNombre(map.get("nombre").toString());
-            ps.getParques().setDireccion(map.get("direccion").toString());
-            ps.getParques().setLongitud(Float.parseFloat(map.get("longitud").toString()));
-            ps.getParques().setLatitud(Float.parseFloat(map.get("latitud").toString()));
+            ps.getParques().setdescripcion(map.get("descripcion").toString());
+            //es un double
+            ps.getParques().setLongitud(Double.parseDouble(map.get("longitud").toString()));
+            ps.getParques().setLatitud(Double.parseDouble(map.get("latitud").toString()));
             ps.save();
 
             res.put("msg", "Ok");
@@ -88,9 +89,9 @@ public class ParquesApi {
             ParquesServices ps = new ParquesServices();
             ps.getParques().setidParques(Integer.parseInt(map.get("id").toString()));
             ps.getParques().setNombre(map.get("nombre").toString());
-            ps.getParques().setDireccion(map.get("direccion").toString());
-            ps.getParques().setLongitud(Float.parseFloat(map.get("longitud").toString()));
-            ps.getParques().setLatitud(Float.parseFloat(map.get("latitud").toString()));
+            ps.getParques().setdescripcion(map.get("descripcion").toString());
+            ps.getParques().setLongitud(Double.parseDouble(map.get("longitud").toString()));
+            ps.getParques().setLatitud(Double.parseDouble(map.get("latitud").toString()));
             ps.update();
             res.put("msg", "Ok");
             res.put("data", "Actualizado exitoso");
