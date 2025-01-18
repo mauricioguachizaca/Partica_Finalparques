@@ -4,8 +4,7 @@ public class Adyecencia {
     private Integer destination;
     private Float weight;
 
-    //tienes que construir el constructor por defecto 
-    public Adyecencia(Integer destination, Float weight) {
+public Adyecencia(Integer destination, Float weight) {
         this.destination = destination;
         this.weight = weight;
         
