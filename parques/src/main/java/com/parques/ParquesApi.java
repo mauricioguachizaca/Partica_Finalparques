@@ -13,7 +13,12 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import com.google.gson.JsonArray;
+
 import controller.Dao.servicies.ParquesServices;
+import controller.tda.list.LinkedList;
+import models.Parques;
+import controller.Dao.ParquesDao;
 @Path("/parques")
 public class ParquesApi {
     
@@ -122,4 +127,63 @@ public class ParquesApi {
             return Response.status(Response.Status.BAD_REQUEST).entity(res).build();
         }
     }
+
+
+    @Path("/caminoCorto/{origen}/{destino}/{algoritmo}")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response calcularCaminoCorto(@PathParam("origen") int origen,
+                                        @PathParam("destino") int destino,
+                                        @PathParam("algoritmo") int algoritmo) {
+        HashMap<String, Object> res = new HashMap<>();
+        try {
+            ParquesServices ps = new ParquesServices();
+            String resultado = ps.calcularCaminoCorto(origen, destino, algoritmo);
+            res.put("msg", "Camino corto calculado");
+            res.put("data", resultado);
+            return Response.ok(res).build();
+        } catch (Exception e) {
+            res.put("msg", "Error");
+            res.put("data", e.getMessage());
+            return Response.status(Response.Status.BAD_REQUEST).entity(res).build();
+        }
+    }
+
+    @Path("/grafo_ver_admin")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response grafoVerAdmin() {
+        HashMap<String, Object> res = new HashMap<>();
+        try {
+            // Crear instancia de DAO
+            ParquesDao parquesDao = new ParquesDao();
+            
+            // Obtener lista de parques
+            LinkedList<Parques> listaParques = parquesDao.getListAll();
+                    
+            // Crear y obtener el grafo
+            parquesDao.creategraph();
+            
+            // Guardar el grafo
+            parquesDao.saveGraph(); // Asegúrate de que este método se llame para guardar el grafo
+            
+            // Obtener pesos del grafo
+            JsonArray pesos = parquesDao.obtainWeights();
+            
+            // Construir respuesta
+            res.put("msg", "Grafo generado exitosamente");
+            res.put("lista", listaParques.toArray());
+            res.put("pesos", pesos);
+    
+            return Response.ok(res).build();
+    
+        } catch (Exception e) {
+            res.put("msg", "Error");
+            res.put("data", e.getMessage());
+            return Response.status(Response.Status.BAD_REQUEST).entity(res).build();
+        }
+    }
+    
+
+
 }

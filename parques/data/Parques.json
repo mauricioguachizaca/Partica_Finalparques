@@ -14,59 +14,59 @@
         "latitud": 79.20706035805235
     },
     {
-            "idParques": 3,
-            "nombre": "Parque La Carolina",
-            "descripcion": "Uno de los parques más grandes de Quito, ideal para deportes y recreación",
-            "longitud": -78.485521,
-            "latitud": -0.180653
-        },
-        {
-            "idParques": 4,
-            "nombre": "Parque El Ejido",
-            "descripcion": "Parque céntrico en Quito con áreas verdes y ferias artesanales",
-            "longitud": -78.498987,
-            "latitud": -0.210202
-        },
-        {
-            "idParques": 5,
-            "nombre": "Parque Metropolitano Guangüiltagua",
-            "descripcion": "El parque urbano más grande de Quito, ideal para senderismo y ciclismo",
-            "longitud": -78.452921,
-            "latitud": -0.171967
-        },
-        {
-            "idParques": 6,
-            "nombre": "Parque Histórico de Guayaquil",
-            "descripcion": "Parque que combina historia, naturaleza y vida silvestre",
-            "longitud": -79.876369,
-            "latitud": -2.146620
-        },
-        {
-            "idParques": 7,
-            "nombre": "Parque Samanes",
-            "descripcion": "Uno de los parques más grandes de Guayaquil con múltiples áreas deportivas",
-            "longitud": -79.888201,
-            "latitud": -2.117713
-        },
-        {
-            "idParques": 8,
-            "nombre": "Parque Seminario",
-            "descripcion": "Famoso parque de Guayaquil con iguanas y jardines",
-            "longitud": -79.882695,
-            "latitud": -2.196160
-        },
-        {
-            "idParques": 9,
-            "nombre": "Parque Calderón",
-            "descripcion": "Plaza central de Cuenca, rodeada de arquitectura colonial",
-            "longitud": -79.003722,
-            "latitud": -2.900128
-        },
-        {
-            "idParques": 10,
-            "nombre": "Parque Lineal del Río Coca",
-            "descripcion": "Parque ecológico en Quito con senderos y miradores",
-            "longitud": -78.452354,
-            "latitud": -0.165743
-        }
+        "idParques": 3,
+        "nombre": "Parque La Carolina",
+        "descripcion": "Uno de los parques más grandes de Quito, ideal para deportes y recreación",
+        "longitud": -78.485521,
+        "latitud": -0.180653
+    },
+    {
+        "idParques": 4,
+        "nombre": "Parque El Ejido",
+        "descripcion": "Parque céntrico en Quito con áreas verdes y ferias artesanales",
+        "longitud": -78.498987,
+        "latitud": -0.210202
+    },
+    {
+        "idParques": 5,
+        "nombre": "Parque Metropolitano Guangüiltagua",
+        "descripcion": "El parque urbano más grande de Quito, ideal para senderismo y ciclismo",
+        "longitud": -78.452921,
+        "latitud": -0.171967
+    },
+    {
+        "idParques": 6,
+        "nombre": "Parque Histórico de Guayaquil",
+        "descripcion": "Parque que combina historia, naturaleza y vida silvestre",
+        "longitud": -79.876369,
+        "latitud": -2.146620
+    },
+    {
+        "idParques": 7,
+        "nombre": "Parque Samanes",
+        "descripcion": "Uno de los parques más grandes de Guayaquil con múltiples áreas deportivas",
+        "longitud": -79.888201,
+        "latitud": -2.117713
+    },
+    {
+        "idParques": 8,
+        "nombre": "Parque Seminario",
+        "descripcion": "Famoso parque de Guayaquil con iguanas y jardines",
+        "longitud": -79.882695,
+        "latitud": -2.196160
+    },
+    {
+        "idParques": 9,
+        "nombre": "Parque Calderón",
+        "descripcion": "Plaza central de Cuenca, rodeada de arquitectura colonial",
+        "longitud": -79.003722,
+        "latitud": -2.900128
+    },
+    {
+        "idParques": 10,
+        "nombre": "Parque Lineal del Río Coca",
+        "descripcion": "Parque ecológico en Quito con senderos y miradores",
+        "longitud": -78.452354,
+        "latitud": -0.165743
+    }
 ]
