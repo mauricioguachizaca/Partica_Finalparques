@@ -65,7 +65,9 @@ public class ParquesDao extends AdapterDao<Parques> {
 
         // Verificar si el archivo existe y cargarlo
         if (graph.existsFile(name)) {
+            graph.cargarModelosDesdeDao();
             graph.loadGraph(name);
+            System.out.println("Modelo asociado al grafo: " + name);
         } else {
             throw new Exception("El archivo de grafo no existe.");
         }

@@ -16,6 +16,7 @@ import javax.ws.rs.core.Response;
 import com.google.gson.JsonArray;
 
 import controller.Dao.servicies.ParquesServices;
+import controller.tda.graph.graphlablenodirect;
 import controller.tda.list.LinkedList;
 import models.Parques;
 import controller.Dao.ParquesDao;
@@ -127,28 +128,6 @@ public class ParquesApi {
             return Response.status(Response.Status.BAD_REQUEST).entity(res).build();
         }
     }
-
-
-    @Path("/caminoCorto/{origen}/{destino}/{algoritmo}")
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response calcularCaminoCorto(@PathParam("origen") int origen,
-                                        @PathParam("destino") int destino,
-                                        @PathParam("algoritmo") int algoritmo) {
-        HashMap<String, Object> res = new HashMap<>();
-        try {
-            ParquesServices ps = new ParquesServices();
-            String resultado = ps.calcularCaminoCorto(origen, destino, algoritmo);
-            res.put("msg", "Camino corto calculado");
-            res.put("data", resultado);
-            return Response.ok(res).build();
-        } catch (Exception e) {
-            res.put("msg", "Error");
-            res.put("data", e.getMessage());
-            return Response.status(Response.Status.BAD_REQUEST).entity(res).build();
-        }
-    }
-
     @Path("/grafo_ver_admin")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -183,7 +162,45 @@ public class ParquesApi {
             return Response.status(Response.Status.BAD_REQUEST).entity(res).build();
         }
     }
+@Path("/union")
+@GET
+@Produces(MediaType.APPLICATION_JSON)
+public Response unionesgrafos() {
+    HashMap<String, Object> res = new HashMap<>();
+    try {
+        ParquesDao parquesDao = new ParquesDao();
+
+        // Obtener el grafo antes de la modificación
+        graphlablenodirect<String> graph = parquesDao.obtenerGrafo();
+        System.out.println("Estado inicial del grafo:");
+        System.out.println(graph.toString());
+
+        // Intentar agregar la arista
+        try {
+            graph.add_edge(2, 1);
+            //System.out.println("Arista agregada (1 -> 2)");
+        } catch (Exception e) {
+            //System.err.println("Error al agregar arista: " + e.getMessage());
+            throw e;
+        }
+
+        // Guardar cambios en el grafo
+        parquesDao.saveGraph();
+
+        // Verificar el estado final
+        System.out.println("Estado final del grafo:");
+        System.out.println(graph.toString());
+
+        res.put("msg", "Grafo actualizado exitosamente");
+        return Response.ok(res).build();
     
+    } catch (Exception e) {
+        res.put("msg", "Error");
+        res.put("data", e.getMessage());
+        return Response.status(Response.Status.BAD_REQUEST).entity(res).build();
+    }
+}
+
 
 
 }

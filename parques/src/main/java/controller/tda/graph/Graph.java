@@ -3,11 +3,17 @@ package controller.tda.graph;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.util.HashMap;
+import java.util.Map;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+
+import controller.Dao.ParquesDao;
 import controller.tda.list.LinkedList;
+import controller.tda.list.ListEmptyException;
 import models.Parques;
 
 import static java.lang.Math.*;
@@ -16,6 +22,8 @@ public abstract class Graph {
 
     // Ruta para guardar el archivo
     public static String filePath = "data/";
+
+    private Map<Integer, Parques> vertexModels = new HashMap<>();
 
     // Métodos abstractos
     public abstract Integer nro_vertices();
@@ -67,7 +75,6 @@ public abstract class Graph {
                     JsonObject destinationObject = new JsonObject();
                     destinationObject.addProperty("from", this.getVertex(i));
                     destinationObject.addProperty("to", adj.getdestination());
-                    destinationObject.addProperty("weight", adj.getweight());
                     destinationsArray.add(destinationObject);
                 }
             }
@@ -84,53 +91,99 @@ public abstract class Graph {
             directory.mkdirs();
         }
 
-        FileWriter fileWriter = new FileWriter(filePath + filename);
-        fileWriter.write(json);
-        fileWriter.close();
+        // Escribir el archivo JSON
+        try (FileWriter fileWriter = new FileWriter(filePath + filename)) {
+            fileWriter.write(json);
+        }
     }
+
+    public void cargarModelosDesdeDao() throws  ListEmptyException {
+    ParquesDao parquesDao = new ParquesDao();
+    LinkedList<Parques> parquesList = parquesDao.getListAll();
+
+    for (int i = 0; i < parquesList.getSize(); i++) {
+        Parques parque = parquesList.get(i);
+        vertexModels.put(parque.getidParques(), parque);
+        System.out.println("Modelo cargado: " + parque.getidParques() + " - " + parque.getNombre() + " - " + parque.getLatitud() + " - " + parque.getLongitud());
+    }
+}
+
 
     // Método para cargar el grafo desde un archivo JSON
     public void loadGraph(String filename) throws Exception {
-        FileReader fileReader = new FileReader(filePath + filename);
-        Gson gson = new Gson();
-        JsonArray graphArray = gson.fromJson(fileReader, JsonArray.class);
-        fileReader.close();
-        
-        for (JsonElement vertexElement : graphArray) {
-            JsonObject vertexObject = vertexElement.getAsJsonObject();
-            
-            // Obtener el ID del vértice
-            Integer labelId = vertexObject.get("labelId").getAsInt();
-            
-            // Obtener el array de destinos
-            JsonArray destinationsArray = vertexObject.getAsJsonArray("destinations");
-        
-            for (JsonElement destinationElement : destinationsArray) {
-                JsonObject destinationObject = destinationElement.getAsJsonObject();
-                
-                // Verificar que los valores "from", "to" y "weight" sean del tipo esperado
-                JsonElement fromElement = destinationObject.get("from");
-                JsonElement toElement = destinationObject.get("to");
-                JsonElement weightElement = destinationObject.get("weight");
-                
-                // Verificar que "from" y "to" sean números enteros
-                Integer from = fromElement.isJsonPrimitive() && fromElement.getAsJsonPrimitive().isNumber() ? fromElement.getAsInt() : null;
-                Integer to = toElement.isJsonPrimitive() && toElement.getAsJsonPrimitive().isNumber() ? toElement.getAsInt() : null;
-                
-                // Verificar que "weight" esté presente, si no está, asignar 0.0f como valor predeterminado
-                Float weight = 0.0f; // Peso predeterminado en caso de no estar presente
-                if (weightElement != null && weightElement.isJsonPrimitive() && weightElement.getAsJsonPrimitive().isNumber()) {
-                    weight = weightElement.getAsFloat(); // Convertir a float solo si es un número
+        System.out.println("Cargando archivo: " + filename);
+    
+        try (FileReader fileReader = new FileReader(filePath + filename)) {
+            Gson gson = new Gson();
+            JsonArray graphArray = gson.fromJson(fileReader, JsonArray.class);
+            System.out.println("Contenido del archivo cargado.");
+    
+            // Iterar sobre los vértices en el grafo
+            for (JsonElement vertexElement : graphArray) {
+                JsonObject vertexObject = vertexElement.getAsJsonObject();
+                System.out.println("Procesando vértice: " + vertexObject);
+    
+                // Obtener el ID del vértice
+                Integer labelId = vertexObject.get("labelId").getAsInt();
+                System.out.println("ID del vértice: " + labelId);
+    
+                // Obtener el modelo ya existente en lugar de crear uno nuevo
+                Parques model = vertexModels.get(labelId);
+    
+                if (model == null) {
+                    System.out.println("Error: No se encontró un modelo existente para el vértice " + labelId);
+                    continue; // Si no existe, pasar al siguiente vértice
                 }
-                
-                // Si los valores son válidos, agregar la arista
-                if (from != null && to != null) {
-                    this.add_edge(from, to, weight); // Agregar la arista con el peso
-                } else {
-                    System.err.println("Invalid data for edge: from = " + from + ", to = " + to + ", weight = " + weight);
+    
+                // Asociar el modelo al vértice
+                this.addVertexWithModel(labelId, model);
+                System.out.println("Modelo asociado al vértice: " + labelId);
+    
+                // Obtener el array de destinos
+                JsonArray destinationsArray = vertexObject.getAsJsonArray("destinations");
+                System.out.println("Destinos encontrados para el vértice " + labelId + ": " + destinationsArray.size());
+    
+                for (JsonElement destinationElement : destinationsArray) {
+                    JsonObject destinationObject = destinationElement.getAsJsonObject();
+                    System.out.println("Procesando destino: " + destinationObject);
+    
+                    // Obtener los valores "from", "to"
+                    Integer from = destinationObject.get("from").getAsInt();
+                    Integer to = destinationObject.get("to").getAsInt();
+                    System.out.println("Desde: " + from + " hasta: " + to);
+    
+                    // Obtener los modelos correspondientes a los vértices 'from' y 'to'
+                    Parques modelFrom = vertexModels.get(from);
+                    Parques modelTo = vertexModels.get(to);
+    
+                    if (modelFrom == null || modelTo == null) {
+                        System.out.println("Error: no se encontraron los modelos para los vértices: " + from + " y " + to);
+                    } else {
+                        System.out.println("Modelos obtenidos: " + modelFrom + " y " + modelTo);
+    
+                        // Calcular la distancia utilizando la función 'calcularDistancia'
+                        Float weight = (float) calcularDistancia(modelFrom, modelTo);
+                        System.out.println("Distancia calculada entre " + from + " y " + to + ": " + weight);
+    
+                        // Agregar la arista solo con "from" y "to" (sin el peso en el JSON)
+                        this.add_edge(from, to, weight); // Aquí el peso se calcula y se usa internamente, pero no se guarda en el JSON.
+                        System.out.println("Arista añadida de " + from + " a " + to + " con peso calculado: " + weight);
+                    }
                 }
             }
+            System.out.println("Cargando grafo completado.");
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+    }
+    
+    
+    
+    
+
+    // Método para agregar un vértice con su modelo asociado
+    public void addVertexWithModel(Integer vertexId, Parques model) {
+        vertexModels.put(vertexId, model);  // Asociar el vértice con su modelo
     }
 
     // Método para verificar si un archivo existe en la ruta especificada
@@ -141,21 +194,37 @@ public abstract class Graph {
 
     // Método para calcular la distancia entre dos parques
     public static double calcularDistancia(Parques parque1, Parques parque2) {
+        // Verificar que las coordenadas no sean nulas
+        if (parque1.getLatitud() == null || parque1.getLongitud() == null || 
+            parque2.getLatitud() == null || parque2.getLongitud() == null) {
+            System.err.println("Error: Una o más coordenadas son nulas.");
+            return Double.NaN;  // Retorna NaN si alguna coordenada es nula
+        }
+    
+        // Imprimir las coordenadas de los parques para depuración
+        System.out.println("Coordenadas de Parque 1: Lat: " + parque1.getLatitud() + " Long: " + parque1.getLongitud());
+        System.out.println("Coordenadas de Parque 2: Lat: " + parque2.getLatitud() + " Long: " + parque2.getLongitud());
+    
+        // Convertir las coordenadas de grados a radianes
         double lat1 = toRadians(parque1.getLatitud().doubleValue());
         double lon1 = toRadians(parque1.getLongitud().doubleValue());
         double lat2 = toRadians(parque2.getLatitud().doubleValue());
         double lon2 = toRadians(parque2.getLongitud().doubleValue());
-
+    
         // Fórmula de Haversine
         double dlat = lat2 - lat1;
         double dlon = lon2 - lon1;
-        double a = pow(sin(dlat / 2), 2) + cos(lat1) * cos(lat2) * pow(sin(dlon / 2), 2);
-        double c = 2 * atan2(sqrt(a), sqrt(1 - a));
-        final double R = 6371.0; // Earth's radius in kilometers
+        double a = Math.pow(Math.sin(dlat / 2), 2) + Math.cos(lat1) * Math.cos(lat2) * Math.pow(Math.sin(dlon / 2), 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    
+        // Radio de la Tierra en metros
+        final double R = 6371000.0; // Radio de la Tierra en metros
         double distancia = R * c;
-
-        return Math.round(distancia * 100.0) / 100.0; // Redondear a 2 decimales
+    
+        // Redondear la distancia a 2 decimales y devolver
+        return Math.round(distancia * 100.0) / 100.0;
     }
+    
 
     // Método para obtener los pesos de las aristas
     public JsonArray obtainWeights() throws Exception {

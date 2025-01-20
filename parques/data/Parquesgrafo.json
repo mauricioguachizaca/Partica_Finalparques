@@ -1,15 +1,30 @@
 [
     {
         "labelId": 1,
-        "destinations": []
+        "destinations": [
+            {
+                "from": 1,
+                "to": 2
+            }
+        ]
     },
     {
         "labelId": 2,
-        "destinations": []
+        "destinations": [
+            {
+                "from": 2,
+                "to": 1
+            }
+        ]
     },
     {
         "labelId": 3,
-        "destinations": []
+        "destinations": [
+            {
+                "from": 3,
+                "to": 2
+            }
+        ]
     },
     {
         "labelId": 4,
