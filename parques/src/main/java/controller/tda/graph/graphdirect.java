@@ -67,6 +67,7 @@ public class graphdirect  extends Graph{
                     Adyecencia aux = matrix[i];
                     if (aux.getdestination().intValue() == v2.intValue()) {
                         weight = aux.getweight();
+
                         break;
                     }
                 }
@@ -74,7 +75,9 @@ public class graphdirect  extends Graph{
         } else {
             throw new  ListEmptyException("El vertice no existe");
         }
+        System.out.println(weight);
         return weight;
+
 
     }
 

@@ -5,6 +5,14 @@
             {
                 "from": 1,
                 "to": 2
+            },
+            {
+                "from": 1,
+                "to": 4
+            },
+            {
+                "from": 1,
+                "to": 10
             }
         ]
     },
@@ -14,6 +22,10 @@
             {
                 "from": 2,
                 "to": 1
+            },
+            {
+                "from": 2,
+                "to": 10
             }
         ]
     },
@@ -28,7 +40,12 @@
     },
     {
         "labelId": 4,
-        "destinations": []
+        "destinations": [
+            {
+                "from": 4,
+                "to": 1
+            }
+        ]
     },
     {
         "labelId": 5,
@@ -40,7 +57,16 @@
     },
     {
         "labelId": 7,
-        "destinations": []
+        "destinations": [
+            {
+                "from": 7,
+                "to": 10
+            },
+            {
+                "from": 7,
+                "to": 3
+            }
+        ]
     },
     {
         "labelId": 8,
@@ -52,6 +78,11 @@
     },
     {
         "labelId": 10,
-        "destinations": []
+        "destinations": [
+            {
+                "from": 10,
+                "to": 5
+            }
+        ]
     }
 ]

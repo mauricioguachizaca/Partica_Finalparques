@@ -44,17 +44,12 @@ public class ParquesDao extends AdapterDao<Parques> {
 
     // Guardar el grafo en un archivo
     public void saveGraph() throws Exception {
-        if (this.graph != null) {
-            this.graph.saveGraphLabel(name);
-        }
+        this.graph.saveGraphLabel(name);
     }
 
     // Obtener pesos del grafo
     public JsonArray obtainWeights() throws Exception {
-        if (this.graph != null) {
             return this.graph.obtainWeights();
-        }
-        return new JsonArray();
     }
 
     // Obtener el grafo (cargarlo si no está cargado)
@@ -76,20 +71,34 @@ public class ParquesDao extends AdapterDao<Parques> {
         return graph;
     }
 
+    
+
     // Método para calcular el camino corto
     public String caminoCorto(int origen, int destino, int algoritmo) throws Exception {
-        if (graph == null) {
-            throw new Exception("Grafo no existe");
-        }
-
-        if (algoritmo == 1) { // Usar algoritmo de Floyd
-            Floyd floydWarshall = new Floyd(graph, origen, destino);
-            return floydWarshall.caminoCorto();
-        } else { // Usar algoritmo de Bellman-Ford
-            BellmanFord bellmanFord = new BellmanFord(graph, origen, destino);
-            return bellmanFord.caminoCorto(destino);
-        }
+    if (graph == null) {
+        throw new Exception("Grafo no existe");
     }
+
+    System.out.println("Calculando camino corto desde " + origen + " hasta " + destino);
+
+    String camino = "";
+
+    if (algoritmo == 1) { // Usar algoritmo de Floyd
+        Floyd floydWarshall = new Floyd(graph, origen, destino);
+        camino = floydWarshall.caminoCorto(); // Se asume que Floyd tiene un método para calcular el camino corto
+    } else { // Usar algoritmo de Bellman-Ford (o cualquier otro algoritmo como Dijkstra)
+        BellmanFord bellmanFord = new BellmanFord(graph, origen, destino);
+        camino = bellmanFord.caminoCorto(algoritmo); // Se asume que BellmanFord tiene un método para calcular el camino corto
+    }
+
+    System.out.println("Camino corto calculado: " + camino);	
+    return camino; // Regresar el camino calculado
+
+}
+
+    
+
+
 
     // Constructor
     public ParquesDao() {

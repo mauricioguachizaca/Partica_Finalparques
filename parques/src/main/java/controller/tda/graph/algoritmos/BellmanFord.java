@@ -6,7 +6,10 @@ import controller.tda.list.ListEmptyException;
 import controller.tda.graph.Adyecencia;
 import controller.tda.graph.graphlabledirect;
 import controller.tda.graph.graphlablenodirect;
+
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 
 public class BellmanFord {
     private graphlablenodirect<String> grafo;
@@ -41,10 +44,14 @@ public class BellmanFord {
                     if (distancias[u] != Float.MAX_VALUE && distancias[u] + peso < distancias[v]) {
                         distancias[v] = distancias[u] + peso;
                         predecesores[v] = u;
+        
+                        // DEBUG: Ver qué se está asignando
+                        System.out.println("Predecesor de " + v + " es " + u);
                     }
                 }
             }
         }
+        
 
         // Verificación de ciclos negativos
         for (int u = 1; u <= n; u++) {
@@ -63,18 +70,32 @@ public class BellmanFord {
         return reconstruirCamino(origen, destino);
     }
 
-    private String reconstruirCamino(int origen, int destino) {
+    private String reconstruirCamino(int origen, int destino) throws Exception {
         if (distancias[destino] == Float.MAX_VALUE) {
             return "No hay camino";
         }
-
+        
         StringBuilder camino = new StringBuilder();
-        for (int v = destino; v != origen; v = predecesores[v]) {
-            camino.insert(0, grafo.getLabelL(v) + " <- ");
+        int actual = destino;
+    
+        // Recorrer los predecesores hasta llegar al origen
+        while (actual != -1) {
+            String nombre = grafo.getLabelL(actual);
+            camino.insert(0, nombre + "(" + actual + ")");
+            
+            if (predecesores[actual] != -1) {
+                camino.insert(0, " <- ");  // Solo agregar " <- " si no es el origen
+            }
+            
+            // Depuración: Ver cómo se actualizan los predecesores
+            System.out.println("Nodo actual: " + actual + " (predecesor: " + predecesores[actual] + ")");
+            actual = predecesores[actual];
         }
-        camino.insert(0, grafo.getLabelL(origen));
+        
+        System.out.println("en otra vida total: " +  camino.toString());
         return camino.toString();
+
     }
-
-
+     
+    
 }

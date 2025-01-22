@@ -104,66 +104,53 @@ public abstract class Graph {
     for (int i = 0; i < parquesList.getSize(); i++) {
         Parques parque = parquesList.get(i);
         vertexModels.put(parque.getidParques(), parque);
-        System.out.println("Modelo cargado: " + parque.getidParques() + " - " + parque.getNombre() + " - " + parque.getLatitud() + " - " + parque.getLongitud());
     }
 }
 
 
     // Método para cargar el grafo desde un archivo JSON
     public void loadGraph(String filename) throws Exception {
-        System.out.println("Cargando archivo: " + filename);
     
         try (FileReader fileReader = new FileReader(filePath + filename)) {
             Gson gson = new Gson();
             JsonArray graphArray = gson.fromJson(fileReader, JsonArray.class);
-            System.out.println("Contenido del archivo cargado.");
     
             // Iterar sobre los vértices en el grafo
             for (JsonElement vertexElement : graphArray) {
                 JsonObject vertexObject = vertexElement.getAsJsonObject();
-                System.out.println("Procesando vértice: " + vertexObject);
     
                 // Obtener el ID del vértice
                 Integer labelId = vertexObject.get("labelId").getAsInt();
-                System.out.println("ID del vértice: " + labelId);
     
                 // Obtener el modelo ya existente en lugar de crear uno nuevo
                 Parques model = vertexModels.get(labelId);
     
                 if (model == null) {
-                    System.out.println("Error: No se encontró un modelo existente para el vértice " + labelId);
                     continue; // Si no existe, pasar al siguiente vértice
                 }
     
                 // Asociar el modelo al vértice
                 this.addVertexWithModel(labelId, model);
-                System.out.println("Modelo asociado al vértice: " + labelId);
     
                 // Obtener el array de destinos
                 JsonArray destinationsArray = vertexObject.getAsJsonArray("destinations");
-                System.out.println("Destinos encontrados para el vértice " + labelId + ": " + destinationsArray.size());
     
                 for (JsonElement destinationElement : destinationsArray) {
                     JsonObject destinationObject = destinationElement.getAsJsonObject();
-                    System.out.println("Procesando destino: " + destinationObject);
     
                     // Obtener los valores "from", "to"
                     Integer from = destinationObject.get("from").getAsInt();
                     Integer to = destinationObject.get("to").getAsInt();
-                    System.out.println("Desde: " + from + " hasta: " + to);
     
                     // Obtener los modelos correspondientes a los vértices 'from' y 'to'
                     Parques modelFrom = vertexModels.get(from);
                     Parques modelTo = vertexModels.get(to);
     
                     if (modelFrom == null || modelTo == null) {
-                        System.out.println("Error: no se encontraron los modelos para los vértices: " + from + " y " + to);
                     } else {
-                        System.out.println("Modelos obtenidos: " + modelFrom + " y " + modelTo);
     
                         // Calcular la distancia utilizando la función 'calcularDistancia'
                         Float weight = (float) calcularDistancia(modelFrom, modelTo);
-                        System.out.println("Distancia calculada entre " + from + " y " + to + ": " + weight);
     
                         // Agregar la arista solo con "from" y "to" (sin el peso en el JSON)
                         this.add_edge(from, to, weight); // Aquí el peso se calcula y se usa internamente, pero no se guarda en el JSON.
@@ -171,16 +158,10 @@ public abstract class Graph {
                     }
                 }
             }
-            System.out.println("Cargando grafo completado.");
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-    
-    
-    
-    
-
     // Método para agregar un vértice con su modelo asociado
     public void addVertexWithModel(Integer vertexId, Parques model) {
         vertexModels.put(vertexId, model);  // Asociar el vértice con su modelo
@@ -197,14 +178,8 @@ public abstract class Graph {
         // Verificar que las coordenadas no sean nulas
         if (parque1.getLatitud() == null || parque1.getLongitud() == null || 
             parque2.getLatitud() == null || parque2.getLongitud() == null) {
-            System.err.println("Error: Una o más coordenadas son nulas.");
             return Double.NaN;  // Retorna NaN si alguna coordenada es nula
         }
-    
-        // Imprimir las coordenadas de los parques para depuración
-        System.out.println("Coordenadas de Parque 1: Lat: " + parque1.getLatitud() + " Long: " + parque1.getLongitud());
-        System.out.println("Coordenadas de Parque 2: Lat: " + parque2.getLatitud() + " Long: " + parque2.getLongitud());
-    
         // Convertir las coordenadas de grados a radianes
         double lat1 = toRadians(parque1.getLatitud().doubleValue());
         double lon1 = toRadians(parque1.getLongitud().doubleValue());
@@ -222,7 +197,7 @@ public abstract class Graph {
         double distancia = R * c;
     
         // Redondear la distancia a 2 decimales y devolver
-        return Math.round(distancia * 100.0) / 100.0;
+        return Math.round((distancia / 1000) * 100.0) / 100.0; // Devuelve en kilómetros
     }
     
 

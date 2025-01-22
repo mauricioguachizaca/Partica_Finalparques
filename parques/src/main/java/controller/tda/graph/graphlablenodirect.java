@@ -14,6 +14,10 @@ public class graphlablenodirect<E> extends graphlabledirect<E> {
         }
     }
 
+    public Float getWeigth2(Integer v1, Integer v2) throws Exception {
+        return wieght_edge(v1, v2);
+    }
+
 
     
 }

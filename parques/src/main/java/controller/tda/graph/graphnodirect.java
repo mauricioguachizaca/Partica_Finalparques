@@ -25,8 +25,5 @@ public class graphnodirect extends graphdirect {
         } else {
             throw new  ListEmptyException("El vertice no existe");
         }
-    }
-
-
-    
+    }   
 }

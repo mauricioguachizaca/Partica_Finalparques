@@ -3,15 +3,15 @@
         "idParques": 1,
         "nombre": "Parque San Pedro",
         "descripcion": "parque chevere",
-        "longitud": -4.00731183703881,
-        "latitud": -79.20665944376829
+        "longitud": -79.20645,
+        "latitud": -4.00731
     },
     {
         "idParques": 2,
         "nombre": "Parque de la Musica",
         "descripcion": "parque  muy musical",
-        "longitud": -4.006514422028958,
-        "latitud": 79.20706035805235
+        "longitud": -79.20702,
+        "latitud": -4.00659
     },
     {
         "idParques": 3,

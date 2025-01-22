@@ -21,7 +21,7 @@ public class Floyd {
     public String caminoCorto() throws Exception {
         int n = grafo.nro_vertices();
 
-        // Inicialización de matrices de distancias y siguiente
+        // Inicialización de matrices
         for (int i = 1; i <= n; i++) {
             for (int j = 1; j <= n; j++) {
                 if (i == j) {
@@ -29,8 +29,14 @@ public class Floyd {
                     siguiente[i][j] = -1;
                 } else {
                     try {
-                        distancias[i][j] = grafo.wieght_edge(i, j);
-                        siguiente[i][j] = j;
+                        float peso = grafo.getWeigth2(i, j);
+                        if (Float.isNaN(peso) || peso <= 0) {
+                            distancias[i][j] = Float.MAX_VALUE;
+                            siguiente[i][j] = -1;
+                        } else {
+                            distancias[i][j] = peso;
+                            siguiente[i][j] = j;
+                        }
                     } catch (Exception e) {
                         distancias[i][j] = Float.MAX_VALUE;
                         siguiente[i][j] = -1;
@@ -43,7 +49,8 @@ public class Floyd {
         for (int k = 1; k <= n; k++) {
             for (int i = 1; i <= n; i++) {
                 for (int j = 1; j <= n; j++) {
-                    if (distancias[i][k] + distancias[k][j] < distancias[i][j]) {
+                    if (distancias[i][k] != Float.MAX_VALUE && distancias[k][j] != Float.MAX_VALUE &&
+                        distancias[i][k] + distancias[k][j] < distancias[i][j]) {
                         distancias[i][j] = distancias[i][k] + distancias[k][j];
                         siguiente[i][j] = siguiente[i][k];
                     }
@@ -51,7 +58,6 @@ public class Floyd {
             }
         }
 
-        // Recostrución del camino
         return reconstruirCamino(origen, destino);
     }
 
@@ -62,11 +68,23 @@ public class Floyd {
 
         StringBuilder camino = new StringBuilder();
         int actual = origen;
+        float distanciaTotal = 0; 
+
         while (actual != destino) {
-            camino.append(grafo.getLabelL(actual)).append(" -> ");
+            if (siguiente[actual][destino] == -1) {
+                return "Error: Camino interrumpido inesperadamente.";
+            }
+            // Agregar el ID del nodo al camino (en vez de su label)
+            camino.append(actual).append(" -> ");
+            distanciaTotal += distancias[actual][siguiente[actual][destino]];  // Sumar la distancia total
             actual = siguiente[actual][destino];
         }
-        camino.append(grafo.getLabelL(destino));
-        return camino.toString();
+        camino.append(destino);  // Agregar el destino al camino
+        distanciaTotal += distancias[actual][destino];  // Sumar la última distancia
+
+        // Imprimir la distancia total
+        System.out.println("Distancia total recorrida: " + distanciaTotal);
+
+        return "Camino: " + camino.toString() + "|" +  "Distancia total: " + distanciaTotal;
     }
 }

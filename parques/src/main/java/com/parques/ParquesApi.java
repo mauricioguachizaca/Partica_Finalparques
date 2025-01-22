@@ -177,7 +177,7 @@ public Response unionesgrafos() {
 
         // Intentar agregar la arista
         try {
-            graph.add_edge(2, 1);
+            graph.add_edge(10, 5);
             //System.out.println("Arista agregada (1 -> 2)");
         } catch (Exception e) {
             //System.err.println("Error al agregar arista: " + e.getMessage());
@@ -200,6 +200,37 @@ public Response unionesgrafos() {
         return Response.status(Response.Status.BAD_REQUEST).entity(res).build();
     }
 }
+
+
+@Path("/camino_corto/{origen}/{destino}/{algoritmo}")
+@GET
+@Produces(MediaType.APPLICATION_JSON)
+public Response calcularCaminoCorto(@PathParam("origen") int origen, 
+                                     @PathParam("destino") int destino, 
+                                     @PathParam("algoritmo") int algoritmo) {
+    HashMap<String, Object> res = new HashMap<>();
+    try {
+        // Crear instancia de ParquesDao
+        ParquesDao parquesDao = new ParquesDao();
+        
+        // Obtener el grafo
+        graphlablenodirect<String> graph = parquesDao.obtenerGrafo();
+        
+        // Llamar al método caminoCorto
+        String resultado = parquesDao.caminoCorto(origen, destino, algoritmo);
+        
+        // Construir la respuesta
+        res.put("msg", "Camino corto calculado exitosamente");
+        res.put("resultado", resultado);
+        
+        return Response.ok(res).build();
+    } catch (Exception e) {
+        res.put("msg", "Error");
+        res.put("data", e.getMessage());
+        return Response.status(Response.Status.BAD_REQUEST).entity(res).build();
+    }
+}
+
 
 
 

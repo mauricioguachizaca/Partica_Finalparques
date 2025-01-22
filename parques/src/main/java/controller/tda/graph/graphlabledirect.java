@@ -24,6 +24,7 @@ public class graphlabledirect<E> extends graphdirect {
             throw new Exception("Grafo no etiquetado");
         }
     }
+    
 
     public void insertEdgeL(E v1, E v2, Float wiegth) throws Exception {
         if (isLabelsGraph()) {

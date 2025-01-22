@@ -4,8 +4,9 @@ public class Parques{
     private Integer idParques;
     private String nombre;
     private String descripcion;
-    private Double longitud;
     private Double latitud;
+    private Double longitud;
+    
 
     public Integer getidParques() {
         return this.idParques;
@@ -51,8 +52,8 @@ public class Parques{
         this.idParques = idParques;
         this.nombre = nombre;
         this.descripcion = descripcion;
-        this.longitud = longitud;
         this.latitud = latitud;
+        this.longitud = longitud;
     }
 
     public Parques() {
