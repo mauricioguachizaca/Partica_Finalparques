@@ -5,6 +5,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -162,6 +163,54 @@ public abstract class Graph {
             e.printStackTrace();
         }
     }
+
+    // Método para borrar todas las adyacencias de todos los vértices
+    public void clearEdges() {
+      for (int i = 1; i <= this.nro_vertices(); i++) {
+        this.adyecencias(i).reset();  // Limpiar la lista de adyacencias para cada vértice
+       }
+    }
+
+
+    public void loadGraphWithRandomEdges(String filename) throws Exception {
+    // Primero, cargamos el grafo desde el archivo JSON
+    loadGraph(filename);
+    
+    // Ahora obtenemos los parques desde el DAO para asociarlos a los vértices
+    cargarModelosDesdeDao(); 
+
+    clearEdges();  // Función para borrar las adyacencias
+
+    
+    // Para cada vértice, agregamos al menos 3 conexiones aleatorias
+    Random random = new Random();
+    for (int i = 1; i <= this.nro_vertices(); i++) {
+        LinkedList<Adyecencia> existingEdges = this.adyecencias(i);
+        int connectionsCount = existingEdges.getSize();
+        
+        // Aseguramos que cada vértice tenga al menos 3 conexiones
+        while (connectionsCount < 3) {
+            // Generamos un vértice aleatorio diferente al actual
+            int randomVertex = random.nextInt(this.nro_vertices()) + 1;
+            while (randomVertex == i || is_edges(i, randomVertex)) {
+                randomVertex = random.nextInt(this.nro_vertices()) + 1;
+            }
+
+            // Obtenemos los modelos de los parques correspondientes a los vértices
+            Parques modelFrom = vertexModels.get(i);
+            Parques modelTo = vertexModels.get(randomVertex);
+
+            // Calculamos un peso aleatorio (o puedes usar el método calcularDistancia si ya tienes coordenadas)
+            float weight = (float) calcularDistancia(modelFrom, modelTo);  // Peso aleatorio entre 0 y 100
+            add_edge(i, randomVertex, weight);  // Agregar la arista
+            connectionsCount++;
+        }
+    }
+    
+    // Después de añadir las conexiones aleatorias, guardamos el grafo
+    saveGraphLabel(filename);  
+}
+
     // Método para agregar un vértice con su modelo asociado
     public void addVertexWithModel(Integer vertexId, Parques model) {
         vertexModels.put(vertexId, model);  // Asociar el vértice con su modelo

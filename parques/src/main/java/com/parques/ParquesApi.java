@@ -177,10 +177,7 @@ public Response unionesgrafos() {
 
         // Intentar agregar la arista
         try {
-            graph.add_edge(10, 5);
-            //System.out.println("Arista agregada (1 -> 2)");
         } catch (Exception e) {
-            //System.err.println("Error al agregar arista: " + e.getMessage());
             throw e;
         }
 

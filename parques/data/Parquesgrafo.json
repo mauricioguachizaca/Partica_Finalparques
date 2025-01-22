@@ -12,7 +12,7 @@
             },
             {
                 "from": 1,
-                "to": 10
+                "to": 9
             }
         ]
     },
@@ -21,11 +21,15 @@
         "destinations": [
             {
                 "from": 2,
-                "to": 1
+                "to": 8
             },
             {
                 "from": 2,
-                "to": 10
+                "to": 9
+            },
+            {
+                "from": 2,
+                "to": 3
             }
         ]
     },
@@ -34,7 +38,15 @@
         "destinations": [
             {
                 "from": 3,
-                "to": 2
+                "to": 10
+            },
+            {
+                "from": 3,
+                "to": 9
+            },
+            {
+                "from": 3,
+                "to": 1
             }
         ]
     },
@@ -43,24 +55,62 @@
         "destinations": [
             {
                 "from": 4,
-                "to": 1
+                "to": 8
+            },
+            {
+                "from": 4,
+                "to": 3
+            },
+            {
+                "from": 4,
+                "to": 6
             }
         ]
     },
     {
         "labelId": 5,
-        "destinations": []
+        "destinations": [
+            {
+                "from": 5,
+                "to": 10
+            },
+            {
+                "from": 5,
+                "to": 4
+            },
+            {
+                "from": 5,
+                "to": 2
+            }
+        ]
     },
     {
         "labelId": 6,
-        "destinations": []
+        "destinations": [
+            {
+                "from": 6,
+                "to": 3
+            },
+            {
+                "from": 6,
+                "to": 1
+            },
+            {
+                "from": 6,
+                "to": 8
+            }
+        ]
     },
     {
         "labelId": 7,
         "destinations": [
             {
                 "from": 7,
-                "to": 10
+                "to": 8
+            },
+            {
+                "from": 7,
+                "to": 9
             },
             {
                 "from": 7,
@@ -70,18 +120,52 @@
     },
     {
         "labelId": 8,
-        "destinations": []
+        "destinations": [
+            {
+                "from": 8,
+                "to": 4
+            },
+            {
+                "from": 8,
+                "to": 6
+            },
+            {
+                "from": 8,
+                "to": 10
+            }
+        ]
     },
     {
         "labelId": 9,
-        "destinations": []
+        "destinations": [
+            {
+                "from": 9,
+                "to": 10
+            },
+            {
+                "from": 9,
+                "to": 4
+            },
+            {
+                "from": 9,
+                "to": 6
+            }
+        ]
     },
     {
         "labelId": 10,
         "destinations": [
             {
                 "from": 10,
-                "to": 5
+                "to": 1
+            },
+            {
+                "from": 10,
+                "to": 7
+            },
+            {
+                "from": 10,
+                "to": 3
             }
         ]
     }
