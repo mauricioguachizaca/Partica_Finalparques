@@ -1,0 +1,72 @@
+{% extends 'template.html' %}
+
+{% block content %}
+<!-- Contenedor principal centrado con tarjeta -->
+<div class="flex justify-center p-6">
+    <div class="w-full max-w-lg bg-gray-800 p-6 rounded-lg shadow-lg">
+        <!-- Título centrado -->
+        <h1 class="text-3xl font-semibold text-green-600 text-center mb-6">Ejecutar BFS</h1>
+        
+        <!-- Formulario dentro de la tarjeta -->
+        <form id="bfsForm">
+            <div class="mb-6">
+                <label for="origen" class="block text-lg font-medium text-white">Origen:</label>
+                <select id="origen" name="origen" class="mt-1 p-3 w-full bg-gray-700 text-white border border-green-600 rounded">
+                    {% for parque in data %}
+                        <option value="{{ parque.labelId }}">{{ parque.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit" class="inline-block px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition duration-300 w-full">Ejecutar BFS</button>
+        </form>
+
+        <!-- Mensaje de carga -->
+        <div id="loadingMessage" class="mt-4 text-yellow-300 hidden text-center">
+            Ejecutando BFS...
+        </div>
+
+        <!-- Mostrar resultados dentro de la tarjeta -->
+        <div id="result" class="mt-4 hidden">
+            <h2 class="text-xl text-center text-red-400 mb-2">Resultado:</h2>
+            <p id="resultadoText" class="text-lg text-white text-center"></p>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById("bfsForm").addEventListener("submit", function(event) {
+        event.preventDefault();  // Evitar que el formulario se envíe de forma tradicional
+
+        // Obtener el valor del formulario (origen)
+        const origen = document.getElementById("origen").value;
+
+        // Mostrar mensaje de carga
+        document.getElementById("loadingMessage").classList.remove("hidden");
+        document.getElementById("result").classList.add("hidden");
+
+        // Hacer la solicitud GET a la API de Flask para ejecutar BFS
+        fetch(`/bfs/${origen}`)
+            .then(response => response.json())
+            .then(data => {
+                // Si la solicitud es exitosa, mostrar el resultado
+                if (data) {
+                    document.getElementById("resultadoText").textContent = "Resultado del BFS: " + JSON.stringify(data);
+                    document.getElementById("result").classList.remove("hidden");
+                } else {
+                    document.getElementById("resultadoText").textContent = "Error: No se pudo ejecutar BFS.";
+                    document.getElementById("result").classList.remove("hidden");
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById("resultadoText").textContent = "Error de conexión.";
+                document.getElementById("result").classList.remove("hidden");
+            })
+            .finally(() => {
+                // Ocultar el mensaje de carga
+                document.getElementById("loadingMessage").classList.add("hidden");
+            });
+    });
+</script>
+
+{% endblock %}

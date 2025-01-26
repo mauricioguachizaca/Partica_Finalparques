@@ -85,6 +85,8 @@ public class Floyd {
         // Imprimir la distancia total
         System.out.println("Distancia total recorrida: " + distanciaTotal);
 
-        return "Camino: " + camino.toString() + "|" +  "Distancia total: " + distanciaTotal;
+        return "Camino: " + camino.toString() 
+                + "\nDistancia total: " + distanciaTotal;
+
     }
 }

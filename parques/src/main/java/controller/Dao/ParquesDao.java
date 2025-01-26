@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 
 import controller.Dao.implement.AdapterDao;
 import controller.tda.graph.graphlablenodirect;
+import controller.tda.graph.algoritmos.BFS;
 import controller.tda.graph.algoritmos.BellmanFord;
 import controller.tda.graph.algoritmos.Floyd;
 import controller.tda.list.LinkedList;
@@ -48,19 +49,24 @@ public class ParquesDao extends AdapterDao<Parques> {
     }
     
     //quiero obtener todos los datos de grafo sin que se guarde nuevo solo obtener los que ya estan
-    public graphlablenodirect<String> getGraph() throws Exception {
+    public JsonArray obtainWeights() throws Exception {
         if (graph == null) {
             creategraph();
         }
+    
         if (graph.existsFile(name)) {
             graph.cargarModelosDesdeDao();
             graph.loadGraph(name);
-            System.out.println("Modelo asociado al grafo: " + name);
+    
+            // Asegúrate de que el tipo de dato sea correcto
+            JsonArray graphData = graph.obtainWeights(); // Aquí debe devolver el formato correcto
+            System.out.println("Modelo de vis,js " + graphData);
+            return graphData; // Se asume que graphData es un JsonObject que contiene datos correctos
         } else {
             throw new Exception("El archivo de grafo no existe.");
         }
-        return graph;
     }
+    
     
     public JsonObject getGraphData() throws Exception {
         if (graph == null) {
@@ -80,7 +86,6 @@ public class ParquesDao extends AdapterDao<Parques> {
         }
     }
     
-    // Obtener el grafo (cargarlo si no está cargado)
     public graphlablenodirect<String> crearuniosnes() throws Exception {
         if (graph == null) {
             creategraph();
@@ -95,6 +100,20 @@ public class ParquesDao extends AdapterDao<Parques> {
         saveGraph();
         return graph;
     }
+
+    public String bfs(int origen) throws Exception {
+    if (graph == null) {
+        throw new Exception("El grafo no existe");
+    }
+
+    // Crear la instancia de BFS con el grafo y el nodo de origen
+    BFS bfsAlgoritmo = new BFS(graph, origen);
+
+    // Llamamos al método de recorrerGrafo() de la clase BFS para obtener el recorrido
+    String recorrido = bfsAlgoritmo.recorrerGrafo();
+    return recorrido;
+}
+
 
   
     
@@ -112,7 +131,7 @@ public class ParquesDao extends AdapterDao<Parques> {
         camino = floydWarshall.caminoCorto(); 
     } else { 
         BellmanFord bellmanFord = new BellmanFord(graph, origen, destino);
-        camino = bellmanFord.caminoCorto(algoritmo); 
+        camino = bellmanFord.caminoCorto(); 
     }
 
     System.out.println("Camino corto calculado: " + camino);	

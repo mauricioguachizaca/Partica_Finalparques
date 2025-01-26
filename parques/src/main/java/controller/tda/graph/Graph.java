@@ -199,6 +199,40 @@ public abstract class Graph {
         vertexModels.put(vertexId, model);  
     }
 
+    // Método para obtener los pesos de las aristas
+    public JsonArray obtainWeights() throws Exception {
+        JsonArray result = new JsonArray();
+        
+        // Iterar sobre todos los vértices del grafo
+        for (int i = 1; i <= this.nro_vertices(); i++) {
+            JsonObject vertexInfo = new JsonObject();
+            Parques model = vertexModels.get(i);
+            if (model != null) {
+                vertexInfo.addProperty("name", model.getNombre());  // Nombre del vértice
+            }
+            vertexInfo.addProperty("labelId", this.getVertex(i)); // ID del vértice actual
+
+            JsonArray destinations = new JsonArray(); // Lista de conexiones para el vértice
+            LinkedList<Adyecencia> adyacencias = this.adyecencias(i);
+
+            if (!adyacencias.isEmpty()) {
+                for (int j = 0; j < adyacencias.getSize(); j++) {
+                    Adyecencia adj = adyacencias.get(j);
+                    JsonObject destinationInfo = new JsonObject();
+                    destinationInfo.addProperty("from", this.getVertex(i)); // Desde el vértice actual
+                    destinationInfo.addProperty("to", adj.getdestination()); // Al destino
+                    destinationInfo.addProperty("weight", adj.getweight()); // Peso de la arista
+                    destinations.add(destinationInfo);
+                }
+            }
+
+            vertexInfo.add("destinations", destinations); // Agregar las conexiones al vértice
+            result.add(vertexInfo); // Agregar la información del vértice al resultado
+        }
+        
+        return result;
+    }
+
     // Método para verificar si un archivo existe en la ruta especificada
     public boolean existsFile(String filename) {
         File file = new File(filePath + filename);

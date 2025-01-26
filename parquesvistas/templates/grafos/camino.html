@@ -1,6 +1,138 @@
 {% extends 'template.html' %}
+
 {% block content %}
+<!-- Contenedor principal centrado con tarjeta -->
+<div class="flex justify-center p-6">
+    <div class="w-full max-w-3xl bg-gray-800 p-10 rounded-lg shadow-lg">
+        
+        <!-- Título centrado -->
+        <h1 class="text-3xl font-semibold text-green-600 text-center mb-6">Ejecutar Algoritmos de Grafos</h1>
 
+        <!-- Contenedor principal con dos columnas: BFS a la izquierda, Camino Corto a la derecha -->
+        <div class="flex space-x-6 mb-6">
+            <!-- Sección de Ejecutar BFS (izquierda) -->
+            <div id="bfsSection" class="w-1/2">
+                <h2 class="text-2xl font-semibold text-green-600 text-center mb-4">Ejecutar BFS</h2>
+                <form id="bfsForm" class="space-y-6">
+                    <div>
+                        <label for="origen" class="block text-lg font-medium text-white">Origen:</label>
+                        <select id="origen" name="origen" class="mt-1 p-3 w-full bg-gray-700 text-white border border-green-600 rounded">
+                            {% for parque in data %}
+                                <option value="{{ parque.labelId }}">{{ parque.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" class="inline-block px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition duration-300 w-full">Ejecutar BFS</button>
+                </form>
+            </div>
 
+            <!-- Sección de Calcular Camino Corto (derecha) -->
+            <div id="caminoCortoSection" class="w-1/2">
+                <h2 class="text-2xl font-semibold text-green-600 text-center mb-4">Calcular Camino Corto</h2>
+                <form id="caminoCortoForm" class="space-y-6">
+                    <div>
+                        <label for="origen" class="block text-lg font-medium text-white">Origen:</label>
+                        <select id="origen" name="origen" class="mt-1 p-3 w-full bg-gray-700 text-white border border-green-600 rounded">
+                            {% for parque in data %}
+                                <option value="{{ parque.labelId }}">{{ parque.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div>
+                        <label for="destino" class="block text-lg font-medium text-white">Destino:</label>
+                        <select id="destino" name="destino" class="mt-1 p-3 w-full bg-gray-700 text-white border border-green-600 rounded">
+                            {% for parque in data %}
+                                <option value="{{ parque.labelId }}">{{ parque.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div>
+                        <label for="algoritmo" class="block text-lg font-medium text-white">Algoritmo:</label>
+                        <select id="algoritmo" name="algoritmo" class="mt-1 p-3 w-full bg-gray-700 text-white border border-green-600 rounded">
+                            <option value="1">Floyd-Warshall</option>
+                            <option value="2">Bellman-Ford</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="inline-block px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition duration-300 w-full">Calcular Camino Corto</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Mensaje de carga -->
+        <div id="loadingMessage" class="mt-4 text-yellow-300 hidden text-center">
+            Cargando...
+        </div>
+
+        <!-- Mostrar resultados en el centro, debajo de los formularios -->
+        <div id="result" class="mt-6 text-center hidden">
+            <h2 class="text-xl text-center text-red-400 mb-2">Resultado:</h2>
+            <p id="resultadoText" class="text-lg text-white"></p>
+        </div>
+    </div>
+</div>
+
+<script>
+    // BFS Form Submission
+    document.getElementById("bfsForm").addEventListener("submit", function(event) {
+        event.preventDefault();
+        const origen = document.getElementById("origen").value;
+
+        // Mostrar mensaje de carga
+        document.getElementById("loadingMessage").classList.remove("hidden");
+        document.getElementById("result").classList.add("hidden");
+
+        fetch(`/bfs/${origen}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data) {
+                    document.getElementById("resultadoText").textContent = data.respuesta;
+                    document.getElementById("result").classList.remove("hidden");
+                } else {
+                    document.getElementById("resultadoText").textContent = "Error: No se pudo ejecutar BFS.";
+                    document.getElementById("result").classList.remove("hidden");
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById("resultadoText").textContent = "Error de conexión.";
+                document.getElementById("result").classList.remove("hidden");
+            })
+            .finally(() => {
+                document.getElementById("loadingMessage").classList.add("hidden");
+            });
+    });
+
+    // Camino Corto Form Submission
+    document.getElementById("caminoCortoForm").addEventListener("submit", function(event) {
+        event.preventDefault();
+        const origen = document.getElementById("origen").value;
+        const destino = document.getElementById("destino").value;
+        const algoritmo = document.getElementById("algoritmo").value;
+
+        // Mostrar mensaje de carga
+        document.getElementById("loadingMessage").classList.remove("hidden");
+        document.getElementById("result").classList.add("hidden");
+
+        fetch(`/calculo_camino_corto/${origen}/${destino}/${algoritmo}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.msg === "Camino corto calculado exitosamente") {
+                    document.getElementById("resultadoText").textContent = data.resultado;
+                    document.getElementById("result").classList.remove("hidden");
+                } else {
+                    document.getElementById("resultadoText").textContent = "Error: " + data.msg;
+                    document.getElementById("result").classList.remove("hidden");
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById("resultadoText").textContent = "Error de conexión.";
+                document.getElementById("result").classList.remove("hidden");
+            })
+            .finally(() => {
+                document.getElementById("loadingMessage").classList.add("hidden");
+            });
+    });
+</script>
 
 {% endblock %}

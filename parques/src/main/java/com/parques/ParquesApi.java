@@ -131,6 +131,7 @@ public class ParquesApi {
         }
     }
     // apis de grafos 
+
     @Path("/crear_grafo")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -192,6 +193,23 @@ public Response getCompleteGraphData() {
     }
 }
 
+@Path("/misgrafos")
+@GET
+@Produces(MediaType.APPLICATION_JSON)
+public Response getGraph() {
+    HashMap<String, Object> res = new HashMap<>();
+    try {
+        ParquesDao parquesDao = new ParquesDao();
+        JsonArray graph = parquesDao.obtainWeights();
+        res.put("msg", "Grafo obtenido exitosamente");
+        return Response.ok(graph.toString(), MediaType.APPLICATION_JSON).build();
+    } catch (Exception e) {
+        res.put("msg", "Error");
+        res.put("data", e.getMessage());
+        return Response.status(Response.Status.BAD_REQUEST).entity(res).build();
+    }
+}
+
 
 @Path("/camino_corto/{origen}/{destino}/{algoritmo}")
 @GET
@@ -202,7 +220,7 @@ public Response calcularCaminoCorto(@PathParam("origen") int origen,
     HashMap<String, Object> res = new HashMap<>();
     try {
         ParquesDao parquesDao = new ParquesDao();    
-        graphlablenodirect<String> graph = parquesDao.crearuniosnes();   
+        JsonArray graph = parquesDao.obtainWeights();   
         String resultado = parquesDao.caminoCorto(origen, destino, algoritmo);     
         res.put("msg", "Camino corto calculado exitosamente");
         res.put("resultado", resultado);
@@ -213,6 +231,28 @@ public Response calcularCaminoCorto(@PathParam("origen") int origen,
         return Response.status(Response.Status.BAD_REQUEST).entity(res).build();
     }
 }
+
+
+    @Path("/bfs/{origen}")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response bfs(@PathParam("origen") int origen) throws Exception {
+        HashMap<String, Object> res = new HashMap<>();
+        ParquesDao parquesDao = new ParquesDao();
+        JsonArray graph = parquesDao.obtainWeights();
+        String respuesta = parquesDao.bfs(origen);
+
+
+        try {
+        res.put("respuesta", respuesta);
+        return Response.ok(res).build();          
+        } catch (Exception e) {
+            res.put("msg", "Error");
+            res.put("data", e.getMessage());
+            return Response.status(Response.Status.BAD_REQUEST).entity(res).build();
+        }
+    }
+
 
 
 
