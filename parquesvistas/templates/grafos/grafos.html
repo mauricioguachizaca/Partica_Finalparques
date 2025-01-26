@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mapa de Grafos</title>
+    <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+    <style>
+        #mynetwork {
+            width: 90%; /* Ancho del 90% */
+            height: 600px;
+            border: 3px solid lightgray;
+            background-color: #f9f9f9; /* Fondo más suave */
+            margin: 0 auto; /* Centrado horizontal */
+        }
+        h2 {
+            text-align: center; /* Centra el título */
+            color: rgb(30, 140, 0); /* Color blanco para el título */
+            margin-top: 30px;   
+            
+        }
+    </style>
+</head>
+<body>
+    <h2>Visualización del Grafo</h2>
+    <div id="mynetwork"></div>
+
+    <script>
+        // Asegúrate de que los datos estén correctamente formateados en JSON
+        const graphData = JSON.parse('{{ graph_data | tojson | safe }}');
+
+        if (graphData && graphData.nodes && graphData.edges) {
+            // Se asegura de que cada nodo tenga el label y otras propiedades necesarias
+            const nodes = new vis.DataSet(graphData.nodes.map(node => ({
+                id: node.id,
+                label: node.name, // Utiliza el campo 'name' para la etiqueta
+                color: node.color,
+                size: 20, // Mantén el tamaño de los nodos
+                font: {
+                    size: 18, // Aumenté el tamaño de la fuente
+                    face: 'arial',
+                    color: '#000000', // Color negro para las etiquetas
+                    align: 'center', // Centra el texto dentro del nodo
+                },
+                borderWidth: 3, // Aumenté el grosor del borde
+                shape: 'dot', // Forma del nodo (puedes cambiar a 'dot   ellipse' si prefieres círculos)
+            })));
+
+            // Las aristas también deben tener las propiedades correctas
+            const edges = new vis.DataSet(graphData.edges.map(edge => ({
+                from: edge.from,
+                to: edge.to,
+                color: edge.color,
+                label: edge.weight.toString(), // Se usa el peso de la arista como etiqueta
+                font: { size: 14, align: 'top' }, // Ajusté el tamaño de la fuente en las aristas
+                width: 2, // Aumenté el grosor de las aristas
+            })));
+
+            // Opciones de la red
+            const container = document.getElementById('mynetwork');
+            const data = { nodes, edges };
+
+            const options = { 
+                nodes: {
+                    shape: "ellipse", 
+                    size: 30, 
+                    font: { size: 18, align: 'center' }, // Centra el texto dentro del nodo
+                },
+                edges: { 
+                    arrows: "to", 
+                    physics: true 
+                },
+                physics: {
+                    enabled: true,
+                    barnesHut: {
+                        gravitationalConstant: -5000, // Reduce la fuerza gravitacional para que los nodos estén más separados
+                        centralGravity: 0.1, // Ajusta la gravedad central para hacer que los nodos se repelan más
+                        springLength: 240, // Aumenté la longitud del resorte para más separación (20% más)
+                        springConstant: 0.024, // Aumenté la constante del resorte para más separación (20% más)
+                    },
+                    repulsion: {
+                        springLength: 440, // Aumenté la longitud del resorte para mayor separación (20% más)
+                    },
+                    stabilization: { iterations: 150 },
+                },
+                layout: {
+                    randomSeed: 1, // Cambia esto para obtener diferentes distribuciones
+                }
+            };
+
+            new vis.Network(container, data, options);
+        } else {
+            console.error("Error: No se encontraron datos de grafo");
+        }
+    </script>
+</body>
+</html>

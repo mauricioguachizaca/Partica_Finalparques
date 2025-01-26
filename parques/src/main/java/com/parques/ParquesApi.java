@@ -13,7 +13,9 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 
 import controller.Dao.servicies.ParquesServices;
 import controller.tda.graph.graphlablenodirect;
@@ -128,73 +130,65 @@ public class ParquesApi {
             return Response.status(Response.Status.BAD_REQUEST).entity(res).build();
         }
     }
-    @Path("/grafo_ver_admin")
+    // apis de grafos 
+    @Path("/crear_grafo")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response grafoVerAdmin() {
         HashMap<String, Object> res = new HashMap<>();
         try {
-            // Crear instancia de DAO
             ParquesDao parquesDao = new ParquesDao();
-            
-            // Obtener lista de parques
-            LinkedList<Parques> listaParques = parquesDao.getListAll();
-                    
-            // Crear y obtener el grafo
+            LinkedList<Parques> listaParques = parquesDao.getListAll();         
             parquesDao.creategraph();
-            
-            // Guardar el grafo
-            parquesDao.saveGraph(); // Asegúrate de que este método se llame para guardar el grafo
-            
-            // Obtener pesos del grafo
-            JsonArray pesos = parquesDao.obtainWeights();
-            
-            // Construir respuesta
+            parquesDao.saveGraph(); 
             res.put("msg", "Grafo generado exitosamente");
             res.put("lista", listaParques.toArray());
-            res.put("pesos", pesos);
-    
-            return Response.ok(res).build();
-    
+            return Response.ok(res).build();   
         } catch (Exception e) {
             res.put("msg", "Error");
             res.put("data", e.getMessage());
             return Response.status(Response.Status.BAD_REQUEST).entity(res).build();
         }
-    }
-@Path("/union")
+    } 
+@Path("/adyacencias_aleatorias")
 @GET
 @Produces(MediaType.APPLICATION_JSON)
 public Response unionesgrafos() {
     HashMap<String, Object> res = new HashMap<>();
     try {
         ParquesDao parquesDao = new ParquesDao();
-
-        // Obtener el grafo antes de la modificación
-        graphlablenodirect<String> graph = parquesDao.obtenerGrafo();
-        System.out.println("Estado inicial del grafo:");
+        graphlablenodirect<String> graph = parquesDao.crearuniosnes();
         System.out.println(graph.toString());
-
-        // Intentar agregar la arista
-        try {
-        } catch (Exception e) {
-            throw e;
-        }
-
-        // Guardar cambios en el grafo
         parquesDao.saveGraph();
-
-        // Verificar el estado final
-        System.out.println("Estado final del grafo:");
-        System.out.println(graph.toString());
-
         res.put("msg", "Grafo actualizado exitosamente");
+        res.put("data", graph.toString());
         return Response.ok(res).build();
-    
     } catch (Exception e) {
         res.put("msg", "Error");
         res.put("data", e.getMessage());
         return Response.status(Response.Status.BAD_REQUEST).entity(res).build();
+    }
+}
+
+@Path("/mapadegrafos")
+@GET
+@Produces(MediaType.APPLICATION_JSON)
+public Response getCompleteGraphData() {
+    try {
+        ParquesDao parquesDao = new ParquesDao();
+        JsonObject graph = parquesDao.getGraphData();
+
+        if (graph == null) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                           .entity("No se pudo obtener el grafo, el objeto está vacío")
+                           .build();
+        }
+
+        System.out.println("Contenido del grafo 43: " + graph.getAsJsonObject());
+        return Response.ok(graph.toString(), MediaType.APPLICATION_JSON).build();
+    } catch (Exception e) {
+        // Manejo de errores
+        return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
     }
 }
 
@@ -207,19 +201,11 @@ public Response calcularCaminoCorto(@PathParam("origen") int origen,
                                      @PathParam("algoritmo") int algoritmo) {
     HashMap<String, Object> res = new HashMap<>();
     try {
-        // Crear instancia de ParquesDao
-        ParquesDao parquesDao = new ParquesDao();
-        
-        // Obtener el grafo
-        graphlablenodirect<String> graph = parquesDao.obtenerGrafo();
-        
-        // Llamar al método caminoCorto
-        String resultado = parquesDao.caminoCorto(origen, destino, algoritmo);
-        
-        // Construir la respuesta
+        ParquesDao parquesDao = new ParquesDao();    
+        graphlablenodirect<String> graph = parquesDao.crearuniosnes();   
+        String resultado = parquesDao.caminoCorto(origen, destino, algoritmo);     
         res.put("msg", "Camino corto calculado exitosamente");
         res.put("resultado", resultado);
-        
         return Response.ok(res).build();
     } catch (Exception e) {
         res.put("msg", "Error");

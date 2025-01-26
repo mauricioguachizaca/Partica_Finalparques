@@ -116,30 +116,24 @@ public abstract class Graph {
             Gson gson = new Gson();
             JsonArray graphArray = gson.fromJson(fileReader, JsonArray.class);
     
-            // Iterar sobre los vértices en el grafo
             for (JsonElement vertexElement : graphArray) {
                 JsonObject vertexObject = vertexElement.getAsJsonObject();
     
-                // Obtener el ID del vértice
                 Integer labelId = vertexObject.get("labelId").getAsInt();
     
-                // Obtener el modelo ya existente en lugar de crear uno nuevo
                 Parques model = vertexModels.get(labelId);
     
                 if (model == null) {
-                    continue; // Si no existe, pasar al siguiente vértice
+                    continue; 
                 }
     
-                // Asociar el modelo al vértice
                 this.addVertexWithModel(labelId, model);
     
-                // Obtener el array de destinos
                 JsonArray destinationsArray = vertexObject.getAsJsonArray("destinations");
     
                 for (JsonElement destinationElement : destinationsArray) {
                     JsonObject destinationObject = destinationElement.getAsJsonObject();
     
-                    // Obtener los valores "from", "to"
                     Integer from = destinationObject.get("from").getAsInt();
                     Integer to = destinationObject.get("to").getAsInt();
     
@@ -150,7 +144,6 @@ public abstract class Graph {
                     if (modelFrom == null || modelTo == null) {
                     } else {
     
-                        // Calcular la distancia utilizando la función 'calcularDistancia'
                         Float weight = (float) calcularDistancia(modelFrom, modelTo);
     
                         // Agregar la arista solo con "from" y "to" (sin el peso en el JSON)
@@ -167,22 +160,14 @@ public abstract class Graph {
     // Método para borrar todas las adyacencias de todos los vértices
     public void clearEdges() {
       for (int i = 1; i <= this.nro_vertices(); i++) {
-        this.adyecencias(i).reset();  // Limpiar la lista de adyacencias para cada vértice
+        this.adyecencias(i).reset();  
        }
     }
-
-
+//crea las adyacencias aleatorias
     public void loadGraphWithRandomEdges(String filename) throws Exception {
-    // Primero, cargamos el grafo desde el archivo JSON
     loadGraph(filename);
-    
-    // Ahora obtenemos los parques desde el DAO para asociarlos a los vértices
     cargarModelosDesdeDao(); 
-
-    clearEdges();  // Función para borrar las adyacencias
-
-    
-    // Para cada vértice, agregamos al menos 3 conexiones aleatorias
+    clearEdges();  
     Random random = new Random();
     for (int i = 1; i <= this.nro_vertices(); i++) {
         LinkedList<Adyecencia> existingEdges = this.adyecencias(i);
@@ -205,15 +190,13 @@ public abstract class Graph {
             add_edge(i, randomVertex, weight);  // Agregar la arista
             connectionsCount++;
         }
-    }
-    
-    // Después de añadir las conexiones aleatorias, guardamos el grafo
+    }    
     saveGraphLabel(filename);  
 }
 
     // Método para agregar un vértice con su modelo asociado
     public void addVertexWithModel(Integer vertexId, Parques model) {
-        vertexModels.put(vertexId, model);  // Asociar el vértice con su modelo
+        vertexModels.put(vertexId, model);  
     }
 
     // Método para verificar si un archivo existe en la ruta especificada
@@ -222,14 +205,11 @@ public abstract class Graph {
         return file.exists();
     }
 
-    // Método para calcular la distancia entre dos parques
     public static double calcularDistancia(Parques parque1, Parques parque2) {
-        // Verificar que las coordenadas no sean nulas
         if (parque1.getLatitud() == null || parque1.getLongitud() == null || 
             parque2.getLatitud() == null || parque2.getLongitud() == null) {
-            return Double.NaN;  // Retorna NaN si alguna coordenada es nula
+            return Double.NaN; 
         }
-        // Convertir las coordenadas de grados a radianes
         double lat1 = toRadians(parque1.getLatitud().doubleValue());
         double lon1 = toRadians(parque1.getLongitud().doubleValue());
         double lat2 = toRadians(parque2.getLatitud().doubleValue());
@@ -241,44 +221,14 @@ public abstract class Graph {
         double a = Math.pow(Math.sin(dlat / 2), 2) + Math.cos(lat1) * Math.cos(lat2) * Math.pow(Math.sin(dlon / 2), 2);
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     
-        // Radio de la Tierra en metros
-        final double R = 6371000.0; // Radio de la Tierra en metros
+        final double R = 6371000.0; 
         double distancia = R * c;
     
-        // Redondear la distancia a 2 decimales y devolver
-        return Math.round((distancia / 1000) * 100.0) / 100.0; // Devuelve en kilómetros
+        return Math.round((distancia / 1000) * 100.0) / 100.0;
     }
     
 
-    // Método para obtener los pesos de las aristas
-    public JsonArray obtainWeights() throws Exception {
-        JsonArray result = new JsonArray();
-        
-        // Iterar sobre todos los vértices del grafo
-        for (int i = 1; i <= this.nro_vertices(); i++) {
-            JsonObject vertexInfo = new JsonObject();
-            vertexInfo.addProperty("labelId", this.getVertex(i)); // ID del vértice actual
 
-            JsonArray destinations = new JsonArray(); // Lista de conexiones para el vértice
-            LinkedList<Adyecencia> adyacencias = this.adyecencias(i);
-
-            if (!adyacencias.isEmpty()) {
-                for (int j = 0; j < adyacencias.getSize(); j++) {
-                    Adyecencia adj = adyacencias.get(j);
-                    JsonObject destinationInfo = new JsonObject();
-                    destinationInfo.addProperty("from", this.getVertex(i)); // Desde el vértice actual
-                    destinationInfo.addProperty("to", adj.getdestination()); // Al destino
-                    destinationInfo.addProperty("weight", adj.getweight()); // Peso de la arista
-                    destinations.add(destinationInfo);
-                }
-            }
-
-            vertexInfo.add("destinations", destinations); // Agregar las conexiones al vértice
-            result.add(vertexInfo); // Agregar la información del vértice al resultado
-        }
-
-        return result;
-    }
 
     // Método principal para guardar el grafo con el nombre "grafo.json"
     public void guardarGrafo() {
@@ -290,4 +240,55 @@ public abstract class Graph {
             e.printStackTrace();  // En caso de error, imprime la traza del error
         }
     }
+
+    // Método para obtener los datos del grafo en formato Vis.js
+public JsonObject getVisGraphData() throws Exception {
+    JsonObject visGraph = new JsonObject();
+
+    // Arrays para los nodos y las aristas
+    JsonArray nodes = new JsonArray();
+    JsonArray edges = new JsonArray();
+    
+
+    // Iteramos sobre los vértices
+    for (int i = 1; i <= this.nro_vertices(); i++) {
+        JsonObject node = new JsonObject();
+        Parques model = vertexModels.get(i);
+        if (model != null) {
+            node.addProperty("name", model.getNombre());  // Nombre del vértice
+        }
+        node.addProperty("id", i);  // ID del nodo
+        node.addProperty("label", "V" + i);  // Etiqueta del nodo (puedes personalizarlo)
+        
+        // Opcional: Agregar un color o más propiedades si lo deseas
+        node.addProperty("color", "#ff0000");  // Un color de ejemplo, puedes personalizarlo
+        nodes.add(node);
+
+        // Obtener las adyacencias de este vértice
+        LinkedList<Adyecencia> adyacencias = this.adyecencias(i);
+        if (!adyacencias.isEmpty()) {
+            for (int j = 0; j < adyacencias.getSize(); j++) {
+                Adyecencia adj = adyacencias.get(j);
+                JsonObject edge = new JsonObject();
+                edge.addProperty("from", i);  // Nodo origen
+                edge.addProperty("to", adj.getdestination());  // Nodo destino
+                edge.addProperty("weight", adj.getweight());
+                 
+                 // Peso de la arista
+
+                // Opcional: Puedes agregar más propiedades a la arista si lo deseas
+                edge.addProperty("color", "#7CFC00");  // Color de la arista (personalizable)
+                edges.add(edge);
+            }
+        }
+    }
+
+    // Añadir nodos y aristas al objeto principal
+    visGraph.add("nodes", nodes);
+    visGraph.add("edges", edges);
+    
+    return visGraph;
+}
+
+    
 }

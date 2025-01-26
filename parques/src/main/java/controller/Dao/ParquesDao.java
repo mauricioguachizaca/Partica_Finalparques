@@ -1,6 +1,7 @@
 package controller.Dao;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 
 import controller.Dao.implement.AdapterDao;
 import controller.tda.graph.graphlablenodirect;
@@ -17,28 +18,27 @@ public class ParquesDao extends AdapterDao<Parques> {
     private LinkedList<String> vertexName;
     private String name = "Parquesgrafo.json";
 
-    // Método para crear el grafo
     public graphlablenodirect<String> creategraph() {
-        // Inicializar vertexName si es null
         if (vertexName == null) {
             vertexName = new LinkedList<>();
         }
-        
-        // Obtener lista de parques
         LinkedList<Parques> list = this.getListAll();
         if (!list.isEmpty()) {
-            // Inicializar grafo si es null
             if (graph == null) {
+                System.out.println("Grafo mio" + graph);
                 graph = new graphlablenodirect<>(list.getSize(), String.class);
             }
             
             Parques[] parques = list.toArray();
             for (int i = 0; i < parques.length; i++) {
                 this.graph.labelsVertices(i + 1, parques[i].getNombre());
+                System.out.println("Mis vertecis " + vertexName);
+
                 vertexName.add(parques[i].getNombre());
             }
             this.graph.drawGraph();
         }
+        System.out.println("Grafo creado" + graph);
         return this.graph;
     }
 
@@ -46,19 +46,45 @@ public class ParquesDao extends AdapterDao<Parques> {
     public void saveGraph() throws Exception {
         this.graph.saveGraphLabel(name);
     }
-
-    // Obtener pesos del grafo
-    public JsonArray obtainWeights() throws Exception {
-            return this.graph.obtainWeights();
-    }
-
-    // Obtener el grafo (cargarlo si no está cargado)
-    public graphlablenodirect<String> obtenerGrafo() throws Exception {
+    
+    //quiero obtener todos los datos de grafo sin que se guarde nuevo solo obtener los que ya estan
+    public graphlablenodirect<String> getGraph() throws Exception {
         if (graph == null) {
             creategraph();
         }
-
-        // Verificar si el archivo existe y cargarlo
+        if (graph.existsFile(name)) {
+            graph.cargarModelosDesdeDao();
+            graph.loadGraph(name);
+            System.out.println("Modelo asociado al grafo: " + name);
+        } else {
+            throw new Exception("El archivo de grafo no existe.");
+        }
+        return graph;
+    }
+    
+    public JsonObject getGraphData() throws Exception {
+        if (graph == null) {
+            creategraph();
+        }
+    
+        if (graph.existsFile(name)) {
+            graph.cargarModelosDesdeDao();
+            graph.loadGraph(name);
+    
+            // Asegúrate de que el tipo de dato sea correcto
+            JsonObject graphData = graph.getVisGraphData(); // Aquí debe devolver el formato correcto
+            System.out.println("Modelo de vis,js " + graphData);
+            return graphData; // Se asume que graphData es un JsonObject que contiene datos correctos
+        } else {
+            throw new Exception("El archivo de grafo no existe.");
+        }
+    }
+    
+    // Obtener el grafo (cargarlo si no está cargado)
+    public graphlablenodirect<String> crearuniosnes() throws Exception {
+        if (graph == null) {
+            creategraph();
+        }
         if (graph.existsFile(name)) {
             graph.cargarModelosDesdeDao();
             graph.loadGraphWithRandomEdges(name);
@@ -66,14 +92,12 @@ public class ParquesDao extends AdapterDao<Parques> {
         } else {
             throw new Exception("El archivo de grafo no existe.");
         }
-
         saveGraph();
         return graph;
     }
 
+  
     
-
-    // Método para calcular el camino corto
     public String caminoCorto(int origen, int destino, int algoritmo) throws Exception {
     if (graph == null) {
         throw new Exception("Grafo no existe");
@@ -85,10 +109,10 @@ public class ParquesDao extends AdapterDao<Parques> {
 
     if (algoritmo == 1) { // Usar algoritmo de Floyd
         Floyd floydWarshall = new Floyd(graph, origen, destino);
-        camino = floydWarshall.caminoCorto(); // Se asume que Floyd tiene un método para calcular el camino corto
-    } else { // Usar algoritmo de Bellman-Ford (o cualquier otro algoritmo como Dijkstra)
+        camino = floydWarshall.caminoCorto(); 
+    } else { 
         BellmanFord bellmanFord = new BellmanFord(graph, origen, destino);
-        camino = bellmanFord.caminoCorto(algoritmo); // Se asume que BellmanFord tiene un método para calcular el camino corto
+        camino = bellmanFord.caminoCorto(algoritmo); 
     }
 
     System.out.println("Camino corto calculado: " + camino);	
@@ -96,16 +120,12 @@ public class ParquesDao extends AdapterDao<Parques> {
 
 }
 
+
     
-
-
-
-    // Constructor
     public ParquesDao() {
         super(Parques.class);
     }
 
-    // Obtener o crear un nuevo objeto Parques
     public Parques getParques() {
         if (parques == null) {
             parques = new Parques();
@@ -113,12 +133,10 @@ public class ParquesDao extends AdapterDao<Parques> {
         return this.parques;
     }
 
-    // Establecer objeto Parques
     public void setParques(Parques parques) {
         this.parques = parques;
     }
 
-    // Obtener lista de todos los parques
     public LinkedList<Parques> getListAll() {
         if (this.listAll == null) {
             this.listAll = listAll();
@@ -126,7 +144,6 @@ public class ParquesDao extends AdapterDao<Parques> {
         return this.listAll;
     }
 
-    // Guardar un nuevo parque
     public Boolean save() throws Exception {
         Integer id = getListAll().getSize() + 1;
         getParques().setidParques(id);
@@ -134,14 +151,12 @@ public class ParquesDao extends AdapterDao<Parques> {
         return true;
     }
 
-    // Actualizar parque
     public Boolean update() throws Exception {
         this.merge(getParques(), getParques().getidParques() - 1);
         this.listAll = listAll();
         return true;
     }
 
-    // Eliminar parque por ID
     public Boolean delete(Integer id) throws Exception {
         for (int i = 0; i < getListAll().getSize(); i++) {
             Parques pro = getListAll().get(i);
